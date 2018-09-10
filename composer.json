@@ -1,5 +1,5 @@
 {
-    "name": "shapecode/cron-bundle",
+    "name": "gemorroj/cron-bundle",
     "description": "This bundle provides scheduled execution of Symfony2 commands",
     "keywords": [
         "cron",

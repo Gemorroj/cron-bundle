@@ -55,8 +55,8 @@ class CronScanCommand extends BaseCommand
         $this->setName('shapecode:cron:scan');
         $this->setDescription('Scans for any new or deleted cron jobs');
 
-        $this->addOption('keep-deleted', 'k', InputOption::VALUE_NONE, 'If set, deleted cron jobs will not be removed');
-        $this->addOption('default-disabled', 'd', InputOption::VALUE_NONE, 'If set, new jobs will be disabled by default');
+        $this->addOption('keep-deleted', null, InputOption::VALUE_NONE, 'If set, deleted cron jobs will not be removed');
+        $this->addOption('default-disabled', null, InputOption::VALUE_NONE, 'If set, new jobs will be disabled by default');
     }
 
     /**
