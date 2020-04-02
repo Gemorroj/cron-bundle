@@ -1,29 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\Bundle\CronBundle\Manager;
 
 use Shapecode\Bundle\CronBundle\Event\LoadJobsEvent;
 use Shapecode\Bundle\CronBundle\Model\CronJobMetadata;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-/**
- * Class CronJobManager
- *
- * @package Shapecode\Bundle\CronBundle\Manager
- * @author  Nikita Loges
- */
 class CronJobManager implements CronJobManagerInterface
 {
-
-    /** @var CronJobMetadata[] */
-    protected $jobs;
+    /** @var CronJobMetadata[]|null */
+    private $jobs;
 
     /** @var EventDispatcherInterface */
-    protected $eventDispatcher;
+    private $eventDispatcher;
 
-    /**
-     * @param EventDispatcherInterface $eventDispatcher
-     */
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
@@ -32,18 +24,19 @@ class CronJobManager implements CronJobManagerInterface
     /**
      * @return CronJobMetadata[]
      */
-    protected function initJobs(): array
+    private function initJobs() : array
     {
         $event = new LoadJobsEvent();
-        $this->eventDispatcher->dispatch(LoadJobsEvent::NAME, $event);
+
+        $this->eventDispatcher->dispatch($event, LoadJobsEvent::NAME);
 
         return $event->getJobs();
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getJobs(): array
+    public function getJobs() : array
     {
         if ($this->jobs === null) {
             $this->jobs = $this->initJobs();

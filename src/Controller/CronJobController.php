@@ -1,30 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\Bundle\CronBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 
-/**
- * Class CronJobController
- *
- * @package Shapecode\Bundle\CronBundle\Controller
- * @author  Nikita Loges
- */
-class CronJobController extends Controller
+final class CronJobController
 {
+    /** @var KernelInterface */
+    private $kernel;
 
-    /**
-     * @return Response
-     * @throws \Exception
-     */
-    public function runAction(): Response
+    public function __construct(KernelInterface $kernel)
     {
-        $kernel = $this->get('kernel');
-        $application = new Application($kernel);
+        $this->kernel = $kernel;
+    }
+
+    public function runAction() : Response
+    {
+        $application = new Application($this->kernel);
         $application->setAutoExit(false);
 
         $input = new StringInput('shapecode:cron:run');

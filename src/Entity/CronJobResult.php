@@ -1,137 +1,112 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\Bundle\CronBundle\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class CronJobResult
- *
- * @package Shapecode\Bundle\CronBundle\Entity
- * @author  Nikita Loges
- *
  * @ORM\Entity(repositoryClass="Shapecode\Bundle\CronBundle\Repository\CronJobResultRepository")
- * @ORM\HasLifecycleCallbacks
  */
 class CronJobResult extends AbstractEntity implements CronJobResultInterface
 {
-
     /**
-     * @var \DateTime
      * @ORM\Column(type="datetime")
+     *
+     * @var DateTime
      */
     protected $runAt;
 
     /**
-     * @var float
      * @ORM\Column(type="float")
+     *
+     * @var float
      */
     protected $runTime;
 
     /**
-     * @var integer
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     protected $statusCode;
 
     /**
-     * @var string
      * @ORM\Column(type="text", nullable=true)
+     *
+     * @var string|null
      */
     protected $output;
 
     /**
-     * @var CronJob
      * @ORM\ManyToOne(targetEntity="Shapecode\Bundle\CronBundle\Entity\CronJob", inversedBy="results", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
+     *
+     * @var CronJobInterface
      */
     protected $cronJob;
 
-    /**
-     * @inheritdoc
-     */
     public function __construct()
     {
-        $this->runAt = new \DateTime();
+        parent::__construct();
+
+        $this->runAt = new DateTime();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setRunAt(\DateTime $runAt): void
+    public function setRunAt(DateTime $runAt) : void
     {
         $this->runAt = $runAt;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getRunAt(): \DateTime
+    public function getRunAt() : DateTime
     {
         return $this->runAt;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setRunTime(float $runTime): void
+    public function setRunTime(float $runTime) : void
     {
         $this->runTime = $runTime;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getRunTime(): float
+    public function getRunTime() : float
     {
         return $this->runTime;
     }
 
-    /**
-     * @return int
-     */
-    public function getStatusCode(): int
+    public function getStatusCode() : int
     {
         return $this->statusCode;
     }
 
-    /**
-     * @param int $statusCode
-     */
-    public function setStatusCode(int $statusCode): void
+    public function setStatusCode(int $statusCode) : void
     {
         $this->statusCode = $statusCode;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setOutput(?string $output): void
+    public function setOutput(?string $output) : void
     {
         $this->output = $output;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getOutput(): ?string
+    public function getOutput() : ?string
     {
         return $this->output;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setCronJob(CronJobInterface $job): void
+    public function setCronJob(CronJobInterface $job) : void
     {
         $this->cronJob = $job;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getCronJob(): CronJobInterface
+    public function getCronJob() : CronJobInterface
     {
         return $this->cronJob;
+    }
+
+    public function __toString() : string
+    {
+        return $this->getCronJob()->getCommand() . ' - ' . $this->getRunAt()->format('d.m.Y H:i P');
     }
 }

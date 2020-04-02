@@ -1,49 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\Bundle\CronBundle\Repository;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
 use Shapecode\Bundle\CronBundle\Entity\CronJobInterface;
+use function assert;
 
-/**
- * Class CronJobRepository
- *
- * @package Shapecode\Bundle\CronBundle\Repository
- * @author  Nikita Loges
- */
 class CronJobRepository extends EntityRepository implements CronJobRepositoryInterface
 {
-
-    /**
-     * @inheritdoc
-     */
-    public function findOneByCommand($command, $number = 1)
+    public function findOneByCommand(string $command, int $number = 1) : ?CronJobInterface
     {
-        return $this->findOneBy([
+        $object = $this->findOneBy([
             'command' => $command,
-            'number'  => $number
+            'number'  => $number,
         ]);
+        assert($object instanceof CronJobInterface || $object === null);
+
+        return $object;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function findByCommand($command)
+    public function findByCommand(string $command) : array
     {
         return $this->findBy([
-            'command' => $command
+            'command' => $command,
         ]);
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getKnownJobs()
+    public function getKnownJobs() : Collection
     {
         $data = new ArrayCollection($this->findAll());
 
-        return $data->map(function (CronJobInterface $o) {
+        return $data->map(static function (CronJobInterface $o) : string {
             return $o->getCommand();
         });
     }

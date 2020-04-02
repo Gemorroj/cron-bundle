@@ -7,10 +7,6 @@
          colors="true"
          processIsolation="false"
          bootstrap="tests/bootstrap.php">
-    <php>
-        <ini name="error_reporting" value="-1"/>
-        <server name="KERNEL_CLASS" value="AppKernel"/>
-    </php>
 
     <testsuites>
         <testsuite name="default">

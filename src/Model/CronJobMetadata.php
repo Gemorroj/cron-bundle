@@ -1,69 +1,59 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\Bundle\CronBundle\Model;
 
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
+use function str_replace;
+use function trim;
 
-/**
- * Class CronJobMetadata
- *
- * @package Shapecode\Bundle\CronBundle\Model
- * @author  Nikita Loges
- */
-class CronJobMetadata
+final class CronJobMetadata
 {
+    /** @var string */
+    private $expression;
 
     /** @var string */
-    protected $expression;
-
-    /** @var string */
-    protected $command;
+    private $command;
 
     /** @var string|null */
-    protected $description;
+    private $description;
 
-    /** @var string */
-    protected $arguments;
+    /** @var string|null */
+    private $arguments;
 
-    /**
-     * @param string      $expression
-     * @param string      $command
-     * @param null|string $arguments
-     */
-    public function __construct(string $expression, string $command, ?string $arguments = null)
+    /** @var int */
+    private $maxInstances;
+
+    public function __construct(string $expression, string $command, ?string $arguments = null, int $maxInstances = 1)
     {
-        $this->expression = $expression;
-        $this->command = $command;
-        $this->arguments = $arguments;
+        $this->expression   = $expression;
+        $this->command      = $command;
+        $this->arguments    = $arguments;
+        $this->maxInstances = $maxInstances;
     }
 
-    /**
-     * @param string      $expression
-     * @param Command     $command
-     * @param null|string $arguments
-     *
-     * @return CronJobMetadata
-     */
-    public static function createByCommand(string $expression, Command $command, ?string $arguments = null)
+    public static function createByCommand(string $expression, Command $command, ?string $arguments = null, int $maxInstances = 1) : CronJobMetadata
     {
-        $meta = new static($expression, $command->getName(), $arguments);
+        $commandName = $command->getName();
+
+        if ($commandName === null) {
+            throw new RuntimeException('command has to have a name provided');
+        }
+
+        $meta = new static($expression, $commandName, $arguments, $maxInstances);
         $meta->setDescription($command->getDescription());
 
         return $meta;
     }
 
-    /**
-     * @return string
-     */
-    public function getExpression(): string
+    public function getExpression() : string
     {
         return $this->expression;
     }
 
-    /**
-     * @return string
-     */
-    public function getClearedExpression(): string
+    public function getClearedExpression() : string
     {
         $expression = $this->getExpression();
         $expression = str_replace('\\', '', $expression);
@@ -71,49 +61,43 @@ class CronJobMetadata
         return $expression;
     }
 
-    /**
-     * @return string
-     */
-    public function getFullCommand()
+    public function getFullCommand() : string
     {
         $arguments = '';
 
-        if (!empty($this->getArguments())) {
+        if ($this->getArguments() !== null) {
             $arguments = ' ' . $this->getArguments();
         }
 
         return trim($this->getCommand() . $arguments);
     }
 
-    /**
-     * @return string
-     */
-    public function getCommand(): string
+    public function getCommand() : string
     {
         return trim($this->command);
     }
 
-    /**
-     * @return null|string
-     */
-    public function getArguments(): ?string
+    public function getArguments() : ?string
     {
+        if ($this->arguments === null) {
+            return null;
+        }
+
         return trim($this->arguments);
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription(): ?string
+    public function getDescription() : ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     */
-    public function setDescription(?string $description): void
+    public function setDescription(?string $description) : void
     {
         $this->description = $description;
+    }
+
+    public function getMaxInstances() : int
+    {
+        return $this->maxInstances;
     }
 }

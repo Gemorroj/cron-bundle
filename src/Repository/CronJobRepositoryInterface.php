@@ -1,37 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\Bundle\CronBundle\Repository;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Shapecode\Bundle\CronBundle\Entity\CronJobInterface;
 
-/**
- * Interface CronJobRepositoryInterface
- *
- * @package Shapecode\Bundle\CronBundle\Repository
- * @author  Nikita Loges
- */
 interface CronJobRepositoryInterface extends ObjectRepository
 {
+    public function findOneByCommand(string $command, int $number = 1) : ?CronJobInterface;
 
     /**
-     * @param     $command
-     * @param int $number
-     *
-     * @return null|CronJobInterface
+     * @return CronJobInterface[]
      */
-    public function findOneByCommand($command, $number = 1);
+    public function findByCommand(string $command) : array;
 
     /**
-     * @param $command
-     *
-     * @return array|CronJobInterface[]
+     * @return ArrayCollection|Collection|string[]
      */
-    public function findByCommand($command);
-
-    /**
-     * @return ArrayCollection|string[]
-     */
-    public function getKnownJobs();
+    public function getKnownJobs() : Collection;
 }

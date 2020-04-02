@@ -1,22 +1,20 @@
-Shapecode - Cron Bundle
-=======================
+# Shapecode - Cron Bundle
 
-[![Donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/nicklog/donate)
+[![paypal](https://img.shields.io/badge/Donate-Paypal-blue.svg)](http://paypal.me/nloges)
 
+[![PHP Version](https://img.shields.io/packagist/php-v/shapecode/cron-bundle.svg)](https://packagist.org/packages/shapecode/cron-bundle)
+[![Latest Stable Version](https://img.shields.io/packagist/v/shapecode/cron-bundle.svg?label=stable)](https://packagist.org/packages/shapecode/cron-bundle)
+[![Latest Unstable Version](https://img.shields.io/packagist/vpre/shapecode/cron-bundle.svg?label=unstable)](https://packagist.org/packages/shapecode/cron-bundle)
+[![Total Downloads](https://img.shields.io/packagist/dt/shapecode/cron-bundle.svg)](https://packagist.org/packages/shapecode/cron-bundle)
+[![Monthly Downloads](https://img.shields.io/packagist/dm/shapecode/cron-bundle.svg)](https://packagist.org/packages/shapecode/cron-bundle)
+[![Daily Downloads](https://img.shields.io/packagist/dd/shapecode/cron-bundle.svg)](https://packagist.org/packages/shapecode/cron-bundle)
+[![License](https://img.shields.io/packagist/l/shapecode/cron-bundle.svg)](https://packagist.org/packages/shapecode/cron-bundle)
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/cd190858-da13-4be6-ad02-c933d4272d87/mini.png)](https://insight.sensiolabs.com/projects/cd190858-da13-4be6-ad02-c933d4272d87)
-[![Latest Stable Version](https://poser.pugx.org/shapecode/cron-bundle/v/stable)](https://packagist.org/packages/shapecode/cron-bundle)
-[![Total Downloads](https://poser.pugx.org/shapecode/cron-bundle/downloads)](https://packagist.org/packages/shapecode/cron-bundle)
-[![Monthly Downloads](https://poser.pugx.org/shapecode/cron-bundle/d/monthly)](https://packagist.org/packages/shapecode/cron-bundle)
-[![Daily Downloads](https://poser.pugx.org/shapecode/cron-bundle/d/daily)](https://packagist.org/packages/shapecode/cron-bundle)
-[![Latest Unstable Version](https://poser.pugx.org/shapecode/cron-bundle/v/unstable)](https://packagist.org/packages/shapecode/cron-bundle)
-[![License](https://poser.pugx.org/shapecode/cron-bundle/license)](https://packagist.org/packages/shapecode/cron-bundle)
 
 This bundle provides a simple interface for registering repeated scheduled
 tasks within your application.
 
-Install instructions
---------------------------------
+## Install instructions
 
 Installing this bundle can be done through these simple steps:
 
@@ -25,38 +23,33 @@ Add the bundle to your project through composer:
 composer require shapecode/cron-bundle
 ```
 
-Add the bundle to your application kernel:
+Add the bundle to your config if it flex did not do it for you:
 ```php
 <?php
 
-// application/ApplicationKernel.php
-public function registerBundles()
-{
-	// ...
-	$bundles = array(
-	    // ...
-            new Shapecode\Bundle\CronBundle\ShapecodeCronBundle(),
-	);
+// config/bundles.php
+return [
     // ...
-
-    return $bundles;
-}
+    Shapecode\Bundle\CronBundle\ShapecodeCronBundle::class,
+    // ...
+];
 ```
 
 Update your DB schema ...
 
-... with Doctrine standard method ...
+... with Doctrine schema update method ...
 ```bash
 php bin/console doctrine:schema:update --force
 ```
 
-Creating your own tasks
---------------------------------
+## Creating your own tasks
 
 Creating your own tasks with CronBundle couldn't be easier - all you have to do is create a normal Symfony2 Command (or ContainerAwareCommand) and tag it with the CronJob annotation, as demonstrated below:
 
 ```php
 <?php
+
+declare(strict_types=1);
 
 namespace App\DemoBundle\Command;
 
@@ -64,32 +57,21 @@ use Shapecode\Bundle\CronBundle\Annotation\CronJob;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-// use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 /**
- * Class DemoCommand
- * @package App\DemoBundle\Command
- * @author Nikita Loges
- *
  * @CronJob("*\/5 * * * *")
  * Will be executed every 5 minutes
  */
 class DemoCommand extends Command
 {
     
-    /**
-     * @inheritdoc
-     */
-    public function configure()
+    public function configure() : void
     {
 		// Must have a name configured
 		// ...
     }
     
-    /**
-     * @inheritdoc
-     */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output) : void
     {
 		// Your code here
     }
@@ -106,8 +88,7 @@ $ php bin/console shapecode:cron:scan
 $ php bin/console shapecode:cron:run
 ```
 
-Running your cron jobs automatically
---------------------------------
+## Running your cron jobs automatically
 
 This bundle is designed around the idea that your tasks will be run with a minimum interval - the tasks will be run no more frequently than you schedule them, but they can only run when you trigger then (by running `bin/console shapecode:cron:run`).
 
@@ -116,3 +97,17 @@ To facilitate this, you can create a cron job on your system like this:
 */5 * * * * php /path/to/symfony/bin/console shapecode:cron:run
 ```
 This will schedule your tasks to run at most every 5 minutes - for instance, tasks which are scheduled to run every 3 minutes will only run every 5 minutes.
+
+## Config
+
+### Clean Up
+
+By default your logs will be cleared after 7 days to avoid to many entries in database.  
+You can change this by setting configs.
+
+```yaml
+shapecode_cron:
+    results:
+        auto_prune: true # default
+        interval: 7 days ago # default. A date time interval specification
+```

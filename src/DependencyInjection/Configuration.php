@@ -1,26 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shapecode\Bundle\CronBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-/**
- * Class Configuration
- *
- * @package Shapecode\Bundle\CronBundle\DependencyInjection
- * @author  Nikita Loges
- */
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
+    private const ROOT_NODE = 'shapecode_cron';
 
-    /**
-     * @inheritDoc
-     */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder() : TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('shapecode_cron');
+        $treeBuilder = new TreeBuilder(self::ROOT_NODE);
+        $rootNode    = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
@@ -36,5 +30,4 @@ class Configuration implements ConfigurationInterface
 
         return $treeBuilder;
     }
-
 }
