@@ -20,7 +20,7 @@ Installing this bundle can be done through these simple steps:
 
 Add the bundle to your project through composer:
 ```bash
-composer require shapecode/cron-bundle
+composer require gemorroj/cron-bundle
 ```
 
 Add the bundle to your config if it flex did not do it for you:
